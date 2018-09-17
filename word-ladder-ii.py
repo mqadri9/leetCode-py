@@ -1,4 +1,4 @@
-class Solution(object):
+class Solution:
     def findLadders(self, beginWord, endWord, wordList):
         """
         :type beginWord: str
@@ -8,13 +8,11 @@ class Solution(object):
         """
         self.construct_graph(beginWord, wordList)
         self.BFS(beginWord)
-        s = endWord
-        answer = []
-        while s != beginWord:
-            answer.append(s)
-            s = self.parent[s]
-        print answer
-        
+        self.optimal = self.level[endWord]
+        res = []
+        self.DFS(beginWord, endWord, [], res)
+        print res
+
     def differ_by_one(self, word1, word2):
         if word1 == word2:
             return False
@@ -26,7 +24,7 @@ class Solution(object):
                 else:
                     return False
         return True
-    
+
     def construct_graph(self, beginWord, wordList):
         self.Graph = {}
         complete = wordList
@@ -36,11 +34,10 @@ class Solution(object):
             for e in wordList:
                 if self.differ_by_one(e, s):
                     self.Graph[s].append(e)
-                    
+
 
     def BFS(self, beginWord):
         level = {beginWord: 0}
-        parent = {beginWord: None}
         i = 1 
         frontier = [beginWord]
         while frontier:
@@ -49,9 +46,22 @@ class Solution(object):
                 for v in self.Graph[u]:
                     if v not in level:
                         level[v] = i
-                        parent[v] = u 
                         next1.append(v)
             frontier = next1
             i +=1
-        self.parent = parent
+        self.level = level
         
+    def DFS(self, start, end, solution=[], res=[]):
+        solution.append(start)
+        if end==start:
+            res.append([c for c in solution])
+        else:
+            for next in self.Graph[start]:
+                if self.level[next]==self.level[start]+1:
+                    self.DFS(next, end,  solution, res)
+        del solution[len(solution)-1]
+        
+            
+        
+        
+                    
