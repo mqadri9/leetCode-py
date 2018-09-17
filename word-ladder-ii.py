@@ -6,43 +6,38 @@ class Solution:
         :type wordList: List[str]
         :rtype: List[List[str]]
         """
-        self.construct_graph(beginWord, wordList)
-        self.BFS(beginWord)
-        self.optimal = self.level[endWord]
+        if not endWord in wordList:
+            return []
+        self.Graph = {}
+        self.BFS(beginWord, wordList)
+        self.optimal = self.level.get(endWord)
         res = []
         self.DFS(beginWord, endWord, [], res)
-        print res
+        return res
 
     def differ_by_one(self, word1, word2):
-        if word1 == word2:
-            return False
-        diff_one = False
-        for i in range(len(word1)):
-            if word2[i] != word1[i]:
-                if not diff_one:
-                    diff_one = True
-                else:
-                    return False
+        count_diffs = 0
+        for a, b in zip(word1, word2):
+            if a!=b:
+                if count_diffs: return False
+                count_diffs += 1
         return True
 
-    def construct_graph(self, beginWord, wordList):
-        self.Graph = {}
-        complete = wordList
-        complete.extend([beginWord])
-        for s in complete:
-            self.Graph[s] = []
-            for e in wordList:
-                if self.differ_by_one(e, s):
-                    self.Graph[s].append(e)
-
-
-    def BFS(self, beginWord):
+    def find_neighbours(self, u, wordList):
+        neighbours = []
+        for s in wordList:
+            if u!=s and self.differ_by_one(u, s):
+                neighbours.append(s)
+        return neighbours
+    
+    def BFS(self, beginWord, wordList):
         level = {beginWord: 0}
         i = 1 
         frontier = [beginWord]
         while frontier:
             next1 = []
             for u in frontier:
+                self.Graph[u] = self.getNeighbors(u, wordList)
                 for v in self.Graph[u]:
                     if v not in level:
                         level[v] = i
@@ -57,7 +52,7 @@ class Solution:
             res.append([c for c in solution])
         else:
             for next in self.Graph[start]:
-                if self.level[next]==self.level[start]+1:
+                if self.level and self.level[next]==self.level[start]+1:
                     self.DFS(next, end,  solution, res)
         del solution[len(solution)-1]
         
