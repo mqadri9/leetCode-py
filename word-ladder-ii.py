@@ -1,6 +1,4 @@
 
-
-
 class Solution:
     def findLadders(self, beginWord, endWord, wordList):
         """
@@ -11,13 +9,12 @@ class Solution:
         """
         if not endWord in wordList:
             return []
-        self.Graph = {}
-        self.BFS(beginWord, endWord, wordList)
-        self.optimal = self.level.get(endWord)
-        if not self.optimal:
+        level, Graph = self.BFS(beginWord, endWord, wordList)
+        optimal = level.get(endWord)
+        if not optimal:
             return []
         res = []
-        self.DFS(beginWord, endWord, [], res)
+        self.DFS(Graph, beginWord, endWord, level, optimal, [], res)
         return res
 
     def differ_by_one(self, word1, word2):
@@ -36,6 +33,7 @@ class Solution:
         return neighbours  
     
     def BFS(self, beginWord, endWord, wordList):
+        Graph = {}
         level = {beginWord: 0}
         i = 1 
         frontier = [beginWord]
@@ -43,8 +41,8 @@ class Solution:
         while frontier:
             next1 = []
             for u in frontier:
-                self.Graph[u] = self.find_neighbours(u, wordList)
-                for v in self.Graph[u]:
+                Graph[u] = self.find_neighbours(u, wordList)
+                for v in Graph[u]:
                     if endWord == v:
                         found = True
                     if v not in level:
@@ -54,17 +52,16 @@ class Solution:
                 break
             frontier = next1
             i +=1
-        self.level = level
+        return level, Graph
         
-    def DFS(self, start, end, solution=[], res=[]):
+    def DFS(self, Graph, start, end, level, optimal, solution=[], res=[]):
         solution.append(start)
-        if end==start and len(solution) ==  self.optimal + 1:
+        if end==start and len(solution) ==  optimal + 1:
             res.append([c for c in solution])
         else:
-            if len(solution) !=  self.optimal + 1:
-                for next in self.Graph[start]:
-                    if self.level[next]==self.level[start]+1:
-                        self.DFS(next, end, solution, res)
+            if len(solution) !=  optimal + 1:
+                for next in Graph[start]:
+                    if level[next]==level[start]+1:
+                        self.DFS(Graph, next, end, level, optimal, solution, res)
         del solution[len(solution)-1]
         
-                    
