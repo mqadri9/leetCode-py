@@ -1,3 +1,4 @@
+
 class Solution:
     def findLadders(self, beginWord, endWord, wordList):
         """
@@ -11,6 +12,8 @@ class Solution:
         self.Graph = {}
         self.BFS(beginWord, wordList)
         self.optimal = self.level.get(endWord)
+        if not self.optimal:
+            return []
         res = []
         self.DFS(beginWord, endWord, [], res)
         return res
@@ -37,7 +40,7 @@ class Solution:
         while frontier:
             next1 = []
             for u in frontier:
-                self.Graph[u] = self.getNeighbors(u, wordList)
+                self.Graph[u] = self.find_neighbours(u, wordList)
                 for v in self.Graph[u]:
                     if v not in level:
                         level[v] = i
@@ -48,12 +51,12 @@ class Solution:
         
     def DFS(self, start, end, solution=[], res=[]):
         solution.append(start)
-        if end==start:
+        if end==start and len(solution) ==  self.optimal + 1:
             res.append([c for c in solution])
         else:
             for next in self.Graph[start]:
                 if self.level and self.level[next]==self.level[start]+1:
-                    self.DFS(next, end,  solution, res)
+                    self.DFS(next, end, solution, res)
         del solution[len(solution)-1]
         
             
