@@ -1,5 +1,6 @@
 
 
+
 class Solution:
     def findLadders(self, beginWord, endWord, wordList):
         """
@@ -65,8 +66,5 @@ class Solution:
                     if self.level[next]==self.level[start]+1:
                         self.DFS(next, end, solution, res)
         del solution[len(solution)-1]
-        
-            
-        
         
                     
